@@ -13,6 +13,7 @@ import 'view_model/verify_phone_view_model.dart';
 import 'view_model/verify_code_view_model.dart';
 import 'view_model/home_view_model.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +34,17 @@ void main() async {
     ),
   );
   
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => OnboardingViewModel()),
+      ChangeNotifierProvider(create: (_) => SignInViewModel()),
+      ChangeNotifierProvider(create: (_) => SignUpViewModel()),
+      ChangeNotifierProvider(create: (_) => VerifyPhoneViewModel()),
+      ChangeNotifierProvider(create: (_) => VerifyCodeViewModel()),
+      ChangeNotifierProvider(create: (_) => HomeViewModel()),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -41,30 +52,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => OnboardingViewModel()),
-        ChangeNotifierProvider(create: (_) => SignInViewModel()),
-        ChangeNotifierProvider(create: (_) => SignUpViewModel()),
-        ChangeNotifierProvider(create: (_) => VerifyPhoneViewModel()),
-        ChangeNotifierProvider(create: (_) => VerifyCodeViewModel()),
-        ChangeNotifierProvider(create: (_) => HomeViewModel()),
-      ],
-      child: MaterialApp(
-        title: AppConstants.appName,
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        onGenerateRoute: AppRouter.generateRoute,
-        initialRoute: AppRouter.splashRoute,
-        builder: (context, child) {
-          // Apply additional app-wide styles or behaviors here
-          return MediaQuery(
-            // Set text scaling to ensure consistent text sizes
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-            child: child!,
-          );
-        },
-      ),
+    return Consumer<HomeViewModel>(
+      builder: (context, homeViewModel, _) {
+        return MaterialApp(
+          title: AppConstants.appName,
+          theme: AppTheme.lightTheme,
+          debugShowCheckedModeBanner: false,
+          onGenerateRoute: AppRouter.generateRoute,
+          initialRoute: homeViewModel.user == null ? AppRouter.signInRoute : AppRouter.homeRoute,
+          builder: (context, child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: child!,
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -95,3 +98,4 @@ class CustomPageTransition extends PageRouteBuilder {
           transitionDuration: const Duration(milliseconds: 500),
         );
 }
+
