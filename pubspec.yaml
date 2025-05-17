@@ -47,6 +47,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/app_icon.png"
+  adaptive_icon_foreground: "assets/app_icon_foreground.png"
+  adaptive_icon_background: "#FFFFFF"
     
   # Linting rules
   flutter_lints: ^5.0.0
@@ -59,3 +67,5 @@ flutter:
   assets:
     - assets/images/
     - assets/logo/
+    - assets/app_icon.png
+    - assets/app_icon_foreground.png
